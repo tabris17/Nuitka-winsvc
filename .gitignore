@@ -71,3 +71,4 @@ doxygen-*
 .vscode/tags
 .vscode/.ropeproject
 Nuitka-*
+.venv/
