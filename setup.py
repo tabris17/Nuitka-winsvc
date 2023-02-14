@@ -336,7 +336,7 @@ class BinaryDistribution(Distribution):
         return True
 
 
-with open("README.rst", "rb") as input_file:
+with open("README.md", "rb") as input_file:
     long_description = input_file.read().decode("utf8")
 
     # Need to remove the ..contents etc from the rest, or else PyPI will not render
@@ -347,11 +347,11 @@ with open("README.rst", "rb") as input_file:
     )
 
 setup(
-    name="Nuitka",
+    name="Nuitka-winsvc",
     license="Apache License, Version 2.0",
     version=version,
     long_description=long_description,
-    long_description_content_type="text/x-rst",
+    long_description_content_type="text/markdown",
     classifiers=[
         # Nuitka is mature even
         "Development Status :: 5 - Production/Stable",
