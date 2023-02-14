@@ -23,7 +23,7 @@ In addition to supporting all the command line arguments of Nuitka, Nuitka-winsv
 - `--windows-service-description`  
   Description of the Windows service. If not provided, the file description will be attempted to use.
 - `--windows-service-cmdline`  
-  Additional command line arguments that will be passed to the Windows service. Just like `--config config.json --output output.log` .
+  Additional command line arguments that will be passed to the service, such as `--config config.json --output output.log` .
 
 Use the following command to build a Windows service:
 
@@ -37,7 +37,7 @@ When the python program is compiled successfully, you can use the following comm
 .\main.exe install
 ```
 
-Also you can use the following command to install the service:
+Also you can use the following command to uninstall the service:
 
 ```shell
 .\main.exe uninstall
