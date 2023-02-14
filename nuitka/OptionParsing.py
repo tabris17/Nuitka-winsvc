@@ -1227,6 +1227,51 @@ Request Windows User Control, to enforce running from a few folders only, remote
 desktop access. (Windows only). Defaults to off.""",
 )
 
+windows_group.add_option(
+    "--windows-service",
+    action="store_true",
+    dest="windows_service",
+    metavar="WINDOWS_SERVICE",
+    default=False,
+    help="When compiling for Windows and onefile, enable service mode. Defaults to off.",
+)
+
+windows_group.add_option(
+    "--windows-service-name",
+    action="store",
+    dest="windows_service_name",
+    metavar="WINDOWS_SERVICE_NAME",
+    default=None,
+    help="Name of the Windows service.",
+)
+
+windows_group.add_option(
+    "--windows-service-display-name",
+    action="store",
+    dest="windows_service_display_name",
+    metavar="WINDOWS_SERVICE_DISPLAY_NAME",
+    default=None,
+    help="Display name of the Windows service.",
+)
+
+windows_group.add_option(
+    "--windows-service-description",
+    action="store",
+    dest="windows_service_description",
+    metavar="WINDOWS_SERVICE_DESCRIPTION",
+    default=None,
+    help="Description of the Windows service.",
+)
+
+windows_group.add_option(
+    "--windows-service-cmdline",
+    action="store",
+    dest="windows_service_cmdline",
+    metavar="WINDOWS_SERVICE_CMDLINE",
+    default=None,
+    help="Command Line of the Windows service.",
+)
+
 del windows_group
 
 

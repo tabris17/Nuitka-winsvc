@@ -350,6 +350,7 @@ if env.msvc_mode:
             "/J",  # default char type is unsigned.
             "/Gd",  # Use C calling convention by default.
             "/bigobj",  # Product object files with larger internal limits.
+            "/source-charset:utf-8",
         ]
     )
 
@@ -473,6 +474,7 @@ if win_target and env.gcc_mode and not env.clang_mode:
 # on Windows link against imagehlp to support signed applications detection
 if win_target:
     link_libraries.append("imagehlp")
+    link_libraries.append("advapi32")
 
 # Outside compiler settings are respected.
 if "CPPFLAGS" in os.environ:
