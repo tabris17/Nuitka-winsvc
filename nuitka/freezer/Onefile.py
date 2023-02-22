@@ -89,6 +89,18 @@ def _runOnefileScons(onefile_compression):
     # Allow plugins to build definitions.
     env_values.update(Plugins.getBuildDefinitions())
 
+    if isWin32Windows() and Options.isWindowsServiceMode():
+        env_values["_NUITKA_WINSVC_BOOL"] = "1"
+        winsvcMetrics = Options.getWindowsServiceMetrics()
+        env_values["_NUITKA_WINSVC_NAME_UNICODE"] = winsvcMetrics['name'] \
+            if 'name' in winsvcMetrics else os.path.basename(options['result_name'])
+        env_values["_NUITKA_WINSVC_DISPLAY_NAME_UNICODE"] = winsvcMetrics['display_name'] \
+            if 'display_name' in winsvcMetrics else env_values["_NUITKA_WINSVC_NAME_UNICODE"]
+        if 'description' in winsvcMetrics:
+            env_values["_NUITKA_WINSVC_DESCRIPTION_UNICODE"] = winsvcMetrics['description']
+        if 'cmdline' in winsvcMetrics:
+            env_values["_NUITKA_WINSVC_CMDLINE_UNICODE"] = winsvcMetrics['cmdline']
+
     result = runScons(
         options=options,
         env_values=env_values,
