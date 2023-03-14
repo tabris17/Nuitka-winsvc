@@ -651,7 +651,10 @@ static void cleanupChildProcess(bool send_sigint) {
 #endif
 
 #if defined(_WIN32)
-            BOOL res = GenerateConsoleCtrlEvent(CTRL_C_EVENT, GetProcessId(handle_process));
+            AttachConsole(GetProcessId(handle_process));
+            SetConsoleCtrlHandler(NULL, TRUE);
+            BOOL res = GenerateConsoleCtrlEvent(CTRL_C_EVENT, 0);
+            FreeConsole();
 
             if (res == false) {
                 printError("Failed to send CTRL-C to child process.", GetLastError());
