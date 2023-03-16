@@ -928,7 +928,7 @@ VOID WINAPI SvcMain(DWORD argc, LPSTR* argv)
 int wmain(int argc, wchar_t** argv)
 {
     if (argc == 2) {
-        if (wcscmp(argv[1], L"install") == 0) {
+        if (wcscmp(argv[1], _NUITKA_WINSVC_INSTALL_WIDE_STRING) == 0) {
             wchar_t imagePath[MAX_PATH];
             if (0 == GetModuleFileNameW(NULL, imagePath, MAX_PATH)) {
                 return PrintError(L"GetModuleFileNameW");
@@ -941,7 +941,7 @@ int wmain(int argc, wchar_t** argv)
             return SvcInstall(imagePath);
             #endif
         }
-        else if (wcscmp(argv[1], L"uninstall") == 0) {
+        else if (wcscmp(argv[1], _NUITKA_WINSVC_UNINSTALL_WIDE_STRING) == 0) {
             return SvcUninstall();
         }
     }

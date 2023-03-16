@@ -103,6 +103,8 @@ def _runOnefileScons(onefile_compression):
             env_values["_NUITKA_WINSVC_DESCRIPTION_WIDE_STRING"] = winsvcMetrics['description']
         if 'cmdline' in winsvcMetrics:
             env_values["_NUITKA_WINSVC_CMDLINE_WIDE_STRING"] = winsvcMetrics['cmdline']
+        env_values['_NUITKA_WINSVC_INSTALL_WIDE_STRING'] = winsvcMetrics['install']
+        env_values['_NUITKA_WINSVC_UNINSTALL_WIDE_STRING'] = winsvcMetrics['uninstall']
 
     result = runScons(
         options=options,

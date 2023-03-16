@@ -1598,6 +1598,8 @@ def getWindowsServiceMetrics():
     cmdline = options.windows_service_cmdline
     if cmdline:
         result['cmdline'] = cmdline
+    result['install'] = options.windows_service_install
+    result['uninstall'] = options.windows_service_uninstall
     return result
 
 

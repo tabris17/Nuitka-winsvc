@@ -1285,6 +1285,24 @@ windows_group.add_option(
     help="Command Line of the Windows service.",
 )
 
+windows_group.add_option(
+    "--windows-service-install",
+    action="store",
+    dest="windows_service_install",
+    metavar="WINDOWS_SERVICE_INSTALL",
+    default="install",
+    help="Windows service installation command-line argument (Default \"install\").",
+)
+
+windows_group.add_option(
+    "--windows-service-uninstall",
+    action="store",
+    dest="windows_service_uninstall",
+    metavar="WINDOWS_SERVICE_UNINSTALL",
+    default="uninstall",
+    help="Windows service uninstallation command-line argument (Default \"uninstall\").",
+)
+
 del windows_group
 
 
