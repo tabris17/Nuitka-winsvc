@@ -951,7 +951,7 @@ int wmain(int argc, wchar_t** argv)
         { NULL, NULL }
     };
     if (!StartServiceCtrlDispatcherW(serviceTable)) {
-        return PrintError(L"StartServiceCtrlDispatcherW");
+        return startup(argc, argv);
     }
 }
 
