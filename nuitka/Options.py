@@ -698,6 +698,7 @@ release will add it. In the mean time use '%s' instead."""
             or shallAskForWindowsAdminRights()
             or shallAskForWindowsUIAccessRights()
             or getWindowsSplashScreen()
+            or isWindowsServiceMode()
         ):
             Tracing.options_logger.warning(
                 "Using Windows specific options has no effect on other platforms."
@@ -1575,6 +1576,31 @@ def shallAskForWindowsAdminRights():
 def shallAskForWindowsUIAccessRights():
     """*bool*, value of ``--windows-uac-uiaccess``"""
     return options.windows_uac_uiaccess
+
+
+def isWindowsServiceMode():
+    """*bool*, value of ``--windows-service``"""
+    return options.windows_service
+
+
+def getWindowsServiceMetrics():
+    """*dict of str*, values of ."""
+    result = {}
+    name = options.windows_service_name or getOutputFilename()
+    if name:
+        result['name'] = name
+    display_name = options.windows_service_display_name or getProductName()
+    if display_name:
+        result['display_name'] = display_name
+    description = options.windows_service_description or options.file_description
+    if description:
+        result['description'] = description
+    cmdline = options.windows_service_cmdline
+    if cmdline:
+        result['cmdline'] = cmdline
+    result['install'] = options.windows_service_install
+    result['uninstall'] = options.windows_service_uninstall
+    return result
 
 
 def getWindowsVersionInfoStrings():
