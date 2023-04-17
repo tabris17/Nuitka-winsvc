@@ -285,7 +285,7 @@ def executePostProcessingResources(manifest, onefile):
             data=splash_data,
             resource_kind=RT_RCDATA,
             lang_id=0,
-            res_name=27,
+            res_name=28,
             logger=postprocessing_logger,
         )
 
