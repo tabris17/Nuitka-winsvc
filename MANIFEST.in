@@ -2,7 +2,7 @@
 
 include LICENSE.txt
 include MANIFEST.in
-include README.rst README.pdf
+include README.rst README.pdf README.md
 include Changelog.rst Changelog.pdf
 include Developer_Manual.rst Developer_Manual.pdf
 include doc/*.1
