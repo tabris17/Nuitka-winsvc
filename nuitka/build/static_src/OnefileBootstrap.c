@@ -842,7 +842,7 @@ DWORD PrintError(const wchar_t* fnName)
         MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US),
         (LPWSTR)&errorMessage,
         0, NULL);
-    wprintf(L"%LS failed (%d): %LS", fnName, errorCode, errorMessage);
+    wprintf(L"%ls failed (%d): %ls", fnName, errorCode, errorMessage);
     LocalFree(errorMessage);
     return errorCode;
 }
