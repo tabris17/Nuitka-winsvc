@@ -1,5 +1,7 @@
 # Nuitka-winsvc User Manual
 
+![PyPI](https://img.shields.io/pypi/v/Nuitka-winsvc) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/Nuitka-winsvc) ![License](https://img.shields.io/github/license/tabris17/Nuitka-winsvc) 
+
 Nuitka-winsvc is a forked version of Nuitka, it supports compiling EXE as a Windows service. 
 
 ## Install
