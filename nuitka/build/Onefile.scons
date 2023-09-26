@@ -355,6 +355,7 @@ if env.msvc_mode:
             "/J",  # default char type is unsigned.
             "/Gd",  # Use C calling convention by default.
             "/bigobj",  # Product object files with larger internal limits.
+            "/source-charset:utf-8",
         ]
     )
 
