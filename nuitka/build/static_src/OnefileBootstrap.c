@@ -729,7 +729,10 @@ static void cleanupChildProcess(bool send_sigint) {
 #endif
 
 #if defined(_WIN32)
-            BOOL res = GenerateConsoleCtrlEvent(CTRL_C_EVENT, GetProcessId(handle_process));
+            AttachConsole(GetProcessId(handle_process));
+            SetConsoleCtrlHandler(NULL, TRUE);
+            BOOL res = GenerateConsoleCtrlEvent(CTRL_C_EVENT, 0);
+            FreeConsole();
 
             if (res == false) {
                 printOSErrorMessage("Failed to send CTRL-C to child process.", GetLastError());
@@ -844,7 +847,165 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, wchar_t *lp
     wchar_t **argv = __wargv;
 #else
 #if defined(_WIN32)
+#ifdef _NUITKA_WINSVC_BOOL
+SERVICE_STATUS_HANDLE svcStatusHandle;
+SERVICE_STATUS svcStatus;
+int startup(int, wchar_t**);
+
+DWORD PrintError(const wchar_t* fnName)
+{
+    LPWSTR errorMessage = NULL;
+    DWORD errorCode = GetLastError();
+    FormatMessageW(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER |
+        FORMAT_MESSAGE_FROM_SYSTEM |
+        FORMAT_MESSAGE_IGNORE_INSERTS,
+        NULL,
+        errorCode,
+        MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US),
+        (LPWSTR)&errorMessage,
+        0, NULL);
+    wprintf(L"%ls failed (%d): %ls", fnName, errorCode, errorMessage);
+    LocalFree(errorMessage);
+    return errorCode;
+}
+
+DWORD SvcInstall(LPCWSTR cmdLine)
+{
+    SC_HANDLE scManagerHandle = OpenSCManagerW(NULL, NULL, SC_MANAGER_ALL_ACCESS);
+    if (NULL == scManagerHandle) {
+        return PrintError(L"OpenSCManager");
+    }
+    SC_HANDLE serviceHandle = CreateServiceW(
+        scManagerHandle,
+        _NUITKA_WINSVC_NAME_WIDE_STRING,
+        _NUITKA_WINSVC_DISPLAY_NAME_WIDE_STRING,
+        SERVICE_ALL_ACCESS,
+        SERVICE_WIN32_OWN_PROCESS,
+        SERVICE_AUTO_START,
+        SERVICE_ERROR_NORMAL,
+        cmdLine,
+        NULL, NULL, NULL, NULL, NULL);
+    if (NULL == serviceHandle) {
+        CloseServiceHandle(scManagerHandle);
+        return PrintError(L"CreateService");
+    }
+    else wprintf(L"Service installed successfully\n");
+    #ifdef _NUITKA_WINSVC_DESCRIPTION_WIDE_STRING
+    SERVICE_DESCRIPTIONW serviceDescription;
+    serviceDescription.lpDescription = _NUITKA_WINSVC_DESCRIPTION_WIDE_STRING;
+    if (0 == ChangeServiceConfig2W(serviceHandle, SERVICE_CONFIG_DESCRIPTION, &serviceDescription)) {
+        return PrintError(L"ChangeServiceConfig2W");
+    }
+    #endif
+    CloseServiceHandle(serviceHandle);
+    CloseServiceHandle(scManagerHandle);
+    return NO_ERROR;
+}
+
+DWORD SvcUninstall()
+{
+    SC_HANDLE scManagerHandle = OpenSCManagerW(NULL, NULL, SC_MANAGER_ALL_ACCESS);
+    if (NULL == scManagerHandle) {
+        return PrintError(L"OpenSCManager");
+    }
+    SC_HANDLE serviceHandle = OpenServiceW(scManagerHandle, _NUITKA_WINSVC_NAME_WIDE_STRING, DELETE);
+    if (serviceHandle == NULL) {
+        CloseServiceHandle(scManagerHandle);
+        return PrintError(L"OpenService");
+    }
+    if (!DeleteService(serviceHandle)) {
+        CloseServiceHandle(serviceHandle);
+        return PrintError(L"DeleteService");
+    }
+    else wprintf(L"Service uninstalled successfully\n");
+    CloseServiceHandle(serviceHandle);
+    CloseServiceHandle(scManagerHandle);
+    return NO_ERROR;
+}
+
+VOID ReportSvcStatus(DWORD currentState, DWORD win32ExitCode, DWORD waitHint)
+{
+    static DWORD checkPoint = 1;
+    svcStatus.dwCurrentState = currentState;
+    svcStatus.dwWin32ExitCode = win32ExitCode;
+    svcStatus.dwWaitHint = waitHint;
+
+    if (currentState == SERVICE_START_PENDING)
+        svcStatus.dwControlsAccepted = 0;
+    else svcStatus.dwControlsAccepted = SERVICE_ACCEPT_STOP;
+
+    if ((currentState == SERVICE_RUNNING) ||
+        (currentState == SERVICE_STOPPED))
+        svcStatus.dwCheckPoint = 0;
+    else svcStatus.dwCheckPoint = checkPoint++;
+    SetServiceStatus(svcStatusHandle, &svcStatus);
+}
+
+VOID WINAPI SvcCtrlHandler(DWORD ctrl)
+{
+    switch (ctrl) {
+    case SERVICE_CONTROL_STOP:
+        ReportSvcStatus(SERVICE_STOP_PENDING, NO_ERROR, 0);
+        cleanupChildProcess(true);
+        ReportSvcStatus(svcStatus.dwCurrentState, NO_ERROR, 0);
+        return;
+    case SERVICE_CONTROL_INTERROGATE:
+        break;
+    default:
+        break;
+    }
+}
+
+VOID WINAPI SvcMain(DWORD argc, LPSTR* argv)
+{
+    svcStatusHandle = RegisterServiceCtrlHandlerW(_NUITKA_WINSVC_NAME_WIDE_STRING, SvcCtrlHandler);
+    if (!svcStatusHandle) {
+        return;
+    }
+    svcStatus.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
+    svcStatus.dwServiceSpecificExitCode = 0;
+    ReportSvcStatus(SERVICE_START_PENDING, NO_ERROR, 100);
+
+    ReportSvcStatus(SERVICE_RUNNING, NO_ERROR, 0);
+    startup(argc, (wchar_t **)argv);
+    ReportSvcStatus(SERVICE_STOPPED, NO_ERROR, 0);
+}
+
+int wmain(int argc, wchar_t** argv)
+{
+    if (argc == 2) {
+        if (wcscmp(argv[1], _NUITKA_WINSVC_INSTALL_WIDE_STRING) == 0) {
+            wchar_t imagePath[MAX_PATH];
+            if (0 == GetModuleFileNameW(NULL, imagePath, MAX_PATH)) {
+                return PrintError(L"GetModuleFileNameW");
+            }
+            #ifdef _NUITKA_WINSVC_CMDLINE_WIDE_STRING
+            wchar_t cmdLine[2 << 12];
+            swprintf_s(cmdLine, _countof(cmdLine), L"%s %s", imagePath, _NUITKA_WINSVC_CMDLINE_WIDE_STRING);
+            return SvcInstall(cmdLine);
+            #else
+            return SvcInstall(imagePath);
+            #endif
+        }
+        else if (wcscmp(argv[1], _NUITKA_WINSVC_UNINSTALL_WIDE_STRING) == 0) {
+            return SvcUninstall();
+        }
+    }
+
+    SERVICE_TABLE_ENTRYW serviceTable[] = {
+        { (LPWSTR)_NUITKA_WINSVC_NAME_WIDE_STRING, (LPSERVICE_MAIN_FUNCTIONW)SvcMain },
+        { NULL, NULL }
+    };
+    if (!StartServiceCtrlDispatcherW(serviceTable)) {
+        return startup(argc, argv);
+    }
+}
+
+int startup(int argc, wchar_t **argv) {
+#else
 int wmain(int argc, wchar_t **argv) {
+#endif
 #else
 int main(int argc, char **argv) {
 #endif
