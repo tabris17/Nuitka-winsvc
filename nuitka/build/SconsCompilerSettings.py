@@ -786,7 +786,7 @@ def setupCCompiler(env, lto_mode, pgo_mode, job_count, onefile_compile):
     # we didn't manage to have a "shell32.lib" that is not considered corrupt, so we
     # have to do this.
     if env.msvc_mode and env.target_arch != "arm64":
-        env.Append(LIBS=["Shell32"])
+        env.Append(LIBS=["Shell32", "Advapi32"])
 
     # Since Fedora 36, the system Python will not link otherwise.
     if isFedoraBasedLinux():
