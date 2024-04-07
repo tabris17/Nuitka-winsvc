@@ -2,7 +2,7 @@
 
 include LICENSE.txt
 include MANIFEST.in
-include README.rst
+include README.rst README.md
 include Changelog.rst
 include Developer_Manual.rst
 include doc/nuitka.1
