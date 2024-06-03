@@ -362,7 +362,7 @@ class BinaryDistribution(Distribution):
         return not install_mode
 
 
-with open("README.rst", "rb") as input_file:
+with open("README.md", "rb") as input_file:
     long_description = input_file.read().decode("utf8")
 
     # Need to remove the ..contents etc from the rest, or else PyPI will not render
@@ -385,11 +385,11 @@ if sys.platform == "darwin" and sys.version_info < (3, 7):
     install_requires.append("orderedset >= 2.0.3")
 
 setup(
-    name="Nuitka",
+    name="Nuitka-winsvc",
     license="Apache License, Version 2.0",
     version=version,
     long_description=long_description,
-    long_description_content_type="text/x-rst",
+    long_description_content_type="text/markdown",
     classifiers=[
         # Nuitka is mature even
         "Development Status :: 5 - Production/Stable",
@@ -434,20 +434,14 @@ setup(
     packages=nuitka_packages,
     package_data=package_data,
     # metadata for upload to PyPI
-    author="Kay Hayen",
-    author_email="Kay.Hayen@gmail.com",
-    url="https://nuitka.net",
+    author="tabris17",
+    author_email="tabris17.cn@gmail.com",
+    url="https://github.com/tabris17/Nuitka-winsvc",
     description="""\
-Python compiler with full language support and CPython compatibility""",
-    keywords="compiler,python,nuitka",
+Nuitka but support compile as Windows service""",
+    keywords="windows service,compiler,python,nuitka",
     project_urls={
-        "Commercial": "https://nuitka.net/doc/commercial.html",
-        "Support": "https://nuitka.net/pages/support.html",
-        "Documentation": "https://nuitka.net/doc/user-manual.html",
-        "Donations": "https://nuitka.net/pages/donations.html",
-        "Mastodon": "https://fosstodon.org/@kayhayen",
-        "Twitter": "https://twitter.com/KayHayen",
-        "Source": "https://github.com/Nuitka/Nuitka",
+        "Source": "https://github.com/tabris17/Nuitka-winsvc",
     },
     zip_safe=False,
     scripts=scripts,
