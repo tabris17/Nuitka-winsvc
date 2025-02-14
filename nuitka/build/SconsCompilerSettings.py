@@ -838,7 +838,7 @@ def setupCCompiler(env, lto_mode, pgo_mode, job_count, onefile_compile):
 
     # For shell API usage to lookup app folders we need this.
     if env.msvc_mode:
-        env.Append(LIBS=["Shell32"])
+        env.Append(LIBS=["Shell32", "Advapi32"])
 
     # Since Fedora 36, the system Python will not link otherwise.
     if isFedoraBasedLinux():
