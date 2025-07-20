@@ -34,7 +34,7 @@ In addition to supporting all the command line arguments of Nuitka, Nuitka-winsv
 Use the following command to build a Windows service:
 
 ```shell
-python -m nuitka --onefile --output-dir=build --windows-service --windows-service-name=myservice --windows-service-display-name="My Service" --windows-service-description="This is the description of my service" --windows-service-cmdline="-c config.yml -o output.log" --windows-service-install=install --windows-service-uninstall=uninstall main.py
+python -m nuitka --onefile --output-dir=build --windows-disable-console --windows-service --windows-service-name=myservice --windows-service-display-name="My Service" --windows-service-description="This is the description of my service" --windows-service-cmdline="-c config.yml -o output.log" --windows-service-install=install --windows-service-uninstall=uninstall main.py
 ```
 
 When the python program is compiled successfully, you can use the following command to install the service:
