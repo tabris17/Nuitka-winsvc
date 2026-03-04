@@ -1354,7 +1354,7 @@ def setupCCompiler(env, pgo_mode, exe_target, onefile_compile):
 
     if env.msvc_mode:
         # For shell API usage to lookup app folders we need this.
-        env.Append(LIBS=["Shell32"])
+        env.Append(LIBS=["Shell32", "Advapi32"])
 
         # Make sure to find MSVC "link" in the right spot and to not use the
         # "link" of e.g. Git.
