@@ -26,6 +26,8 @@ from nuitka.options.Options import (
     shallNotCompressOnefile,
     shallOnefileAsArchive,
     shallTraceExecution,
+    isWindowsServiceMode,
+    getWindowsServiceMetrics
 )
 from nuitka.OutputDirectories import getResultFullpath, getSourceDirectoryPath
 from nuitka.plugins.Hooks import (
@@ -104,6 +106,20 @@ def _runOnefileScons(onefile_compression, onefile_archive):
 
     # Allow plugins to build definitions.
     env_values.update(getBuildDefinitions())
+
+    if isWin32Windows() and isWindowsServiceMode():
+        env_values["_NUITKA_WINSVC_BOOL"] = "1"
+        winsvcMetrics = getWindowsServiceMetrics()
+        env_values["_NUITKA_WINSVC_NAME_WIDE_STRING"] = winsvcMetrics['name'] \
+            if 'name' in winsvcMetrics else os.path.splitext(os.path.basename(scons_options['result_exe']))[0]
+        env_values["_NUITKA_WINSVC_DISPLAY_NAME_WIDE_STRING"] = winsvcMetrics['display_name'] \
+            if 'display_name' in winsvcMetrics else env_values["_NUITKA_WINSVC_NAME_WIDE_STRING"]
+        if 'description' in winsvcMetrics:
+            env_values["_NUITKA_WINSVC_DESCRIPTION_WIDE_STRING"] = winsvcMetrics['description']
+        if 'cmdline' in winsvcMetrics:
+            env_values["_NUITKA_WINSVC_CMDLINE_WIDE_STRING"] = winsvcMetrics['cmdline']
+        env_values['_NUITKA_WINSVC_INSTALL_WIDE_STRING'] = winsvcMetrics['install']
+        env_values['_NUITKA_WINSVC_UNINSTALL_WIDE_STRING'] = winsvcMetrics['uninstall']
 
     result = runScons(
         scons_options=scons_options,

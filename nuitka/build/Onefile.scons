@@ -115,6 +115,36 @@ setupCCompiler(
     onefile_compile=True,
 )
 
+# Avoid them as appearing to be different files. TODO: Find out which
+# clang version has this, clang-8 does not.
+if env.gcc_mode and not env.clang_mode and env.gcc_version >= (8,):
+    if source_dir != "." and not full_names:
+        # TODO: This also lies for modules codes.
+        env.Append(
+            CCFLAGS=[
+                "--file-prefix-map=%s=%s" % (os.path.normpath(source_dir), "."),
+                "--file-prefix-map=%s=%s"
+                % (
+                    os.path.normpath(os.path.join(source_dir, "static_src")),
+                    os.path.normpath(os.path.join(nuitka_src, "static_src")),
+                ),
+            ]
+        )
+
+if env.msvc_mode:
+    # With Clang on Windows, there is also an linker to use.
+    env.Append(
+        CCFLAGS=[
+            "/EHsc",  # No C++ exception handling code.
+            "/J",  # default char type is unsigned.
+            "/Gd",  # Use C calling convention by default.
+            "/bigobj",  # Product object files with larger internal limits.
+            "/source-charset:utf-8", # Source files are UTF-8.
+        ]
+    )
+
+    # No incremental linking.
+    env.Append(LINKFLAGS=["/INCREMENTAL:NO"])
 
 if debug_mode:
     if env.msvc_mode:
@@ -289,3 +319,4 @@ env.Default(target)
 #     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
+
