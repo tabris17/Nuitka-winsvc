@@ -110,6 +110,16 @@ setupCCompiler(
     onefile_compile=True,
 )
 
+# The winsvc additions to OnefileBootstrap.c contain UTF-8 encoded string
+# literals, make MSVC treat the source as UTF-8. The other MSVC flags and
+# the GCC "file-prefix-map" handling are already applied by
+# "setupCCompiler" above.
+if env.msvc_mode:
+    env.Append(
+        CCFLAGS=[
+            "/source-charset:utf-8",  # Source files are UTF-8.
+        ]
+    )
 
 if debug_mode:
     if env.msvc_mode:
